@@ -1,53 +1,88 @@
 <template>
   <div>
     <template v-if="!isEmpty">
-      <div class="list-item" v-for="(item, key) in list" :key="key">
-        <a class="circle" @click="addItemToDone(item.id)"></a>
-        <span class="textItem" contenteditable="true">{{ item.name }}</span>
-        <button @click="deleteItem(item.id)">🗑</button>
+      <div
+        v-for="(item, key) in list"
+        :key="key"
+        class="list-item"
+      >
+        <a
+          class="circle"
+          @click="addItemToDone(item.id)"
+        />
+        <span
+          class="textItem"
+          :contenteditable="valueForContentEdit"
+          @dblclick="contentEdit"
+          @keydown.enter="onPressEnter(item)"
+          @blur="onPressEnter(item)"
+          @input="onInput"
+        >{{ item.name }}</span>
+        <button @click="openModal(item)">
+          🗑
+        </button>
       </div>
     </template>
-    <div v-else class="all__done">
+    <div
+      v-else
+      class="all__done"
+    >
       <div>🎊</div>
-      <div class="all__done-done">All done!</div>
+      <div class="all__done-done">
+        All done!
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'Tasks',
-  props: {
-    list: {
-      type: Array,
-      default: () => ({}),
-    },
-  },
+  name: 'TasksList',
+  props: [
+    'list',
+  ],
+  data: () => ({
+    valueForContentEdit: false,
+    nameEdit: '',
+  }),
   computed: {
     isEmpty() {
       return !Object.keys(this.list).length;
     },
   },
   methods: {
-    deleteItem(id) {
-      this.$emit('deleteItem', id);
-    },
     addItemToDone(id) {
       this.$emit('addItemToDone', id);
+    },
+    openModal(item) {
+      this.$emit('modalOpened', item);
+    },
+    contentEdit(e) {
+      this.valueForContentEdit = true;
+      return e === 13 ? 'true' : false;
+    },
+    onPressEnter(item) {
+      this.valueForContentEdit = false;
+      this.$emit('editNameOnLocalStorage', item);
+    },
+    onInput(e) {
+      this.nameEdit = e.target.innerText;
+      this.$emit('editName', this.nameEdit);
     },
   },
 };
 </script>
 
-
-<style>
+<style scoped>
 .task-list {
   margin: 10px auto 40px;
   text-align: center;
   font-size: 1.7em;
   font-weight: 700;
 }
+</style>
 
+<style>
 .list-item {
   text-align: left;
   display: grid;

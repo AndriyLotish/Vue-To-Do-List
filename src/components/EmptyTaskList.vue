@@ -1,20 +1,21 @@
 <template>
   <div class="isEmpty">
     <div class="emptyToDo">
-      <h1 class="task-list">Task list</h1>
-      <Input @submit="onSubmitData" />
+      <h1 class="task-list">
+        Task list
+      </h1>
+      <InputTask @submit="onSubmitData" />
     </div>
-    <div class="span"></div>
   </div>
 </template>
 
 <script>
-import Input from './Input.vue';
+import InputTask from './InputTask.vue';
 
 export default {
-  name: 'isEmptyTaskList',
+  name: 'IsEmptyTaskList',
   components: {
-    Input,
+    InputTask,
   },
   methods: {
     onSubmitData({ task }) {
@@ -52,10 +53,5 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-}
-
-.span {
-  background-image: url("../assets/Write tasks for yourself.png");
-  background-repeat: repeat;
 }
 </style>

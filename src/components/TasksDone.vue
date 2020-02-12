@@ -1,51 +1,65 @@
 <template>
   <div>
-    <template v-if="isEmpty">
-      <div class="list-item" v-for="(item, index) in tasksDoneList" :key="index">
-        <a class="circle__done" @click="addItemToNotDone(item.id)"></a>
-        <span class="task__done-title">{{ item.name }}</span>
-        <button @click="deleteItem(item.id)">🗑</button>
-      </div>
+    <template v-if="isNotEmpty">
+      <template v-for="(item, index) in tasksDoneList">
+        <div
+          v-if="index < indexEl"
+          :key="index"
+          class="list-item"
+        >
+          <a
+            class="circle__done"
+            @click="addItemToNotDone(item.id)"
+          />
+          <span class="task__done-title">{{ item.name }}</span>
+          <button @click="deleteItem(item)">
+            🗑
+          </button>
+        </div>
+        <div
+          v-if="index === indexEl"
+          :key="index"
+          class="show__more"
+        >
+          <a @click="showMore">Show more...</a>
+        </div>
+      </template>
     </template>
-    <div v-else class="no__tasks">You have no completed tasks.</div>
+    <div v-else>
+      You have no completed tasks.
+    </div>
   </div>
 </template>
 
 <script>
 export default {
   name: 'TasksDone',
-  props: {
-    tasksDoneList: {
-      type: Array,
-      default: () => ({}),
-    },
-  },
+  props: [
+    'tasksDoneList',
+  ],
+  data: () => ({
+    indexEl: 5,
+  }),
   computed: {
-    isEmpty() {
+    isNotEmpty() {
       return Object.keys(this.tasksDoneList).length;
     },
   },
   methods: {
-    deleteItem(id) {
-      this.$emit('deleteItem', id);
+    deleteItem(item) {
+      this.$emit('modalOpened', item);
     },
     addItemToNotDone(id) {
       this.$emit('addItemToNotDone', id);
+    },
+    showMore() {
+      this.indexEl += 5;
     },
   },
 };
 </script>
 
 <style>
-.tasksDone {
-  margin: 0 auto;
-  width: 45%;
-  padding: 20px;
-  border-radius: 5px;
-  background-color: #fff;
-  opacity: 0.95;
-}
-
 h2 {
   margin: 10px auto 40px;
   text-align: center;
@@ -70,5 +84,14 @@ h2 {
 .task__done-title {
   text-decoration: line-through;
   font-size: 18px;
+}
+
+.show__more {
+  display: grid;
+  justify-content: center;
+}
+
+.show__more a:hover {
+  text-decoration: underline;
 }
 </style>

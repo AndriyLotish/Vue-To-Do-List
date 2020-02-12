@@ -1,57 +1,67 @@
-/* eslint-disable consistent-return */
 <template>
   <div id="app">
-    <div class="bcgImg"></div>
+    <div class="bcgClr" />
+    <div class="bcgImg" />
     <template v-if="isEmpty">
-      <isEmptyTaskList @addItem="onSubmitData" />
+      <EmptyTaskList @addItem="onSubmitData" />
     </template>
     <div v-else>
-      <div class="sidebar" :style="{top: sidebar + '%'}"></div>
+      <div
+        class="sidebar"
+        :style="{top: sidebar + '%'}"
+      />
       <div class="wrapper">
-        <h1 class="task-list">Task list</h1>
-        <Tasks :list="list" @addItemToDone="onAddItemToDone" @deleteItem="onDeleteItem" />
+        <h1>Task list</h1>
+        <TasksList
+          :list="list"
+          @addItemToDone="onAddItemToDone"
+          @modalOpened="onModalOpened"
+          @editName="onEditName"
+          @editNameOnLocalStorage="onEditNameOnLocalStorage"
+        />
       </div>
-      <Input @submit="onSubmitData" />
+      <InputTask @submit="onSubmitData" />
       <div class="tasksDone">
         <h2>Tasks Done</h2>
         <TasksDone
-          :tasksDoneList="tasksDoneList"
+          :tasks-done-list="tasksDoneList"
           @addItemToNotDone="onAddItemToNotDone"
-          @deleteItem="onDeleteDoneItem"
+          @modalOpened="onModalOpened"
         />
       </div>
-      <percentDoneWork
+      <PercentDoneWork
         :list="list"
-        :tasksDoneList="tasksDoneList"
+        :tasks-done-list="tasksDoneList"
         :count="count"
-        :incomplete="incomplete"
-        :percentDone="percentDone"
+        :complete="complete"
+        :percent-done="percentDone"
+        :modal-opened="modalOpened"
+        :item-for-delete="itemForDelete"
+        @deleteItem="onDeleteItem"
+        @modalClose="onModalClose"
       />
     </div>
     <footer class="copyright">
       <p>
         &copy; 2019
-        <a href="https://digitalidea.studio/" target="_blank">Digital Idea</a>
+        <a
+          href="https://digitalidea.studio/"
+          target="_blank"
+        >Digital Idea</a>
       </p>
     </footer>
   </div>
 </template>
 
 <script>
-import Tasks from './components/Tasks.vue';
-import Input from './components/Input.vue';
-import TasksDone from './components/TasksDone.vue';
-import isEmptyTaskList from './components/isEmptyTaskList.vue';
-import percentDoneWork from './components/percentDoneWork.vue';
-
 export default {
-  name: 'app',
+  name: 'App',
   components: {
-    Tasks,
-    Input,
-    TasksDone,
-    isEmptyTaskList,
-    percentDoneWork,
+    TasksList: () => import('./components/TasksList.vue'),
+    InputTask: () => import('./components/InputTask.vue'),
+    TasksDone: () => import('./components/TasksDone.vue'),
+    EmptyTaskList: () => import('./components/EmptyTaskList.vue'),
+    PercentDoneWork: () => import('./components/PercentDoneWork.vue'),
   },
   data: () => ({
     formData: {
@@ -60,7 +70,33 @@ export default {
     list: [],
     tasksDoneList: [],
     percent: '',
+    modalOpened: false,
+    itemForDelete: '',
+    nameEdit: '',
   }),
+  computed: {
+    count() {
+      return `${this.list.length + this.tasksDoneList.length}`;
+    },
+    complete() {
+      return `${this.count - this.list.length}`;
+    },
+    percentDone() {
+      if (this.complete === this.count && this.count !== 0) {
+        return 100;
+      }
+      if (this.complete < this.count && this.complete !== 0) {
+        return Math.round((this.complete / this.count) * 100);
+      }
+      return 0;
+    },
+    sidebar() {
+      return `${100 - this.percentDone}`;
+    },
+    isEmpty() {
+      return (this.list.length + this.tasksDoneList.length === 0) ? 'true' : false;
+    },
+  },
   created() {
     const tasks = JSON.parse(localStorage.getItem('tasks'));
     if (tasks !== null) {
@@ -74,22 +110,19 @@ export default {
     }
   },
   methods: {
-    onDeleteItem(id) {
-      this.list = this.list.filter(task => task.id !== id);
-      localStorage.setItem('tasks', JSON.stringify(this.list));
-    },
-    onDeleteDoneItem(id) {
-      this.tasksDoneList = this.tasksDoneList.filter(task => task.id !== id);
-      localStorage.setItem('tasks', JSON.stringify(this.tasksDoneList));
+    onDeleteItem() {
+      this.list = this.list.filter(task => task.id !== this.itemForDelete.id);
+      this.tasksDoneList = this.tasksDoneList.filter(task => task.id !== this.itemForDelete.id);
+      const tasks = this.list.concat(this.tasksDoneList);
+      localStorage.setItem('tasks', JSON.stringify(tasks));
     },
     onAddItemToDone(id) {
       const tasks = JSON.parse(localStorage.getItem('tasks'));
       tasks.forEach((task) => {
         if (task.id === id) {
-          // eslint-disable-next-line no-param-reassign
-          task.checked = true;
-          console.log(task);
-          this.tasksDoneList.push(task);
+          const taskItem = task;
+          taskItem.checked = true;
+          this.tasksDoneList.unshift(task);
           this.list = this.list.filter(taskDone => taskDone.id !== id);
         }
       });
@@ -98,9 +131,10 @@ export default {
     onAddItemToNotDone(id) {
       const tasks = JSON.parse(localStorage.getItem('tasks'));
       tasks.forEach((task) => {
+        const taskItem = task;
+
         if (task.id === id) {
-          // eslint-disable-next-line no-param-reassign
-          task.checked = false;
+          taskItem.checked = false;
           this.list.push(task);
           this.tasksDoneList = this.tasksDoneList.filter(
             taskDone => taskDone.id !== id,
@@ -112,38 +146,38 @@ export default {
     onSubmitData({ task }) {
       this.list.push(task);
     },
-  },
-  computed: {
-    count() {
-      return this.list.length + this.tasksDoneList.length;
+    onModalOpened(item) {
+      this.itemForDelete = item;
+      this.modalOpened = true;
     },
-    incomplete() {
-      return +this.count - this.list.length;
+    onModalClose() {
+      this.modalOpened = false;
     },
-    // eslint-disable-next-line vue/return-in-computed-property
-    percentDone() {
-      if (this.incomplete === this.count && this.count !== 0) {
-        return 100;
-      }
-      if (this.incomplete < this.count) {
-        return Math.round((this.incomplete / this.count) * 100);
-      }
-      return 0;
+    onEditName(e) {
+      this.nameEdit = e;
     },
-    sidebar() {
-      return 100 - this.percentDone;
-    },
-    isEmpty() {
-      if (this.list.length + this.tasksDoneList.length === 0) {
-        return true;
-      }
-      return false;
+    onEditNameOnLocalStorage(item) {
+      const tasks = JSON.parse(localStorage.getItem('tasks'));
+      const thisName = this;
+      tasks.forEach((task) => {
+        if (task.id === item.id) {
+          const taskItem = task;
+          taskItem.name = thisName.nameEdit;
+        }
+      });
+      this.list.forEach((task) => {
+        if (task.id === item.id) {
+          const taskItem = task;
+          taskItem.name = thisName.nameEdit;
+        }
+      });
+      localStorage.setItem('tasks', JSON.stringify(tasks));
     },
   },
 };
 </script>
 
-<style>
+<style scoped>
 html,
 body {
   margin: 0;
@@ -160,8 +194,11 @@ body {
   box-sizing: border-box;
 }
 
-:root {
+.bcgClr {
+  position: absolute;
+  left: 0;top: 0;right: 0;bottom: 0;
   background-color: #2c3e50;
+  z-index: -2;
 }
 
 .bcgImg {
@@ -194,6 +231,15 @@ body {
   padding: 20px;
   font-family: Arial, Helvetica, sans-serif;
   border-radius: 5px;
+}
+
+.tasksDone {
+  margin: 0 auto;
+  width: 45%;
+  padding: 20px;
+  border-radius: 5px;
+  background-color: #fff;
+  opacity: 0.95;
 }
 
 .copyright {

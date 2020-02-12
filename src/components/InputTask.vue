@@ -1,35 +1,47 @@
 <template>
-  <div>
     <div class="tasks__new">
+      <div :class="{ 'form-group--error': $v.formData.comment.$error }">
       <input
-        lable-position="bottom"
         id="new-task"
         type="text"
-        @keyup.enter="onSubmit"
         placeholder="New task..."
+        @keyup.enter="onSubmit"
         class="task__new-input"
         v-model="formData.comment"
       />
+      </div>
+      <div v-if="!$v.formData.comment.$error">
+        <div class="error" v-if="$v.formData.comment.required">Field is required</div>
+      </div>
     </div>
-  </div>
 </template>
 
 <script>
+import { required } from 'vuelidate/lib/validators';
+
 export default {
-  name: 'Input',
+  name: 'InputTask',
   props: {
     list: {
       type: Object,
       default: () => ({}),
     },
   },
-  data: () => ({
+  data() {
+    return {
+      formData: {
+        comment: '',
+      },
+    };
+  },
+  validations: {
     formData: {
-      comment: '',
+      comment: { required },
     },
-  }),
+  },
   methods: {
     onSubmit() {
+      if (this.$v.formData.$invalid === true) return;
       if (localStorage.getItem('tasks') === null) {
         localStorage.setItem('tasks', '[]');
       }
@@ -60,16 +72,22 @@ export default {
 <style>
 .tasks__new {
   display: flex;
+  position: relative;
   margin: 10px auto;
   width: 45%;
+  height: 1em;
   padding: 20px;
   border-radius: 5px;
   background-color: #fff;
   opacity: 0.95;
+  overflow: hidden;
 }
 
 .task__new-input {
-  width: 95%;
+  width: 90%;
+  margin: 0 10px 10px 0;
+  position: absolute;
+  justify-content: center;
   font-size: 18px;
   background: none;
   border: none;
@@ -86,5 +104,12 @@ export default {
 .task__new-input:focus {
   border-bottom: 1px solid #9a9999;
   outline: none !important;
+}
+
+.error {
+  position: absolute;
+  color: rgba(247, 157, 157, 0.671);
+  font-size: 11px;
+  bottom: 0;
 }
 </style>
