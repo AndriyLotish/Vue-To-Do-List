@@ -36,7 +36,7 @@ export default {
   name: 'TasksDone',
   props: {
     tasksDoneList: {
-      type: Object,
+      type: Array,
       default: () => ({}),
     },
   },

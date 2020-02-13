@@ -51,27 +51,27 @@ export default {
   name: 'PercentDoneWork',
   props: {
     list: {
-      type: Object,
+      type: Array,
       default: () => ({}),
     },
     tasksDoneList: {
-      type: Object,
+      type: Array,
       default: () => ({}),
     },
     count: {
-      type: Object,
+      type: Number,
       default: () => ({}),
     },
     complete: {
-      type: Object,
+      type: Number,
       default: () => ({}),
     },
     percentDone: {
-      type: Object,
+      type: Number,
       default: () => ({}),
     },
     modalOpened: {
-      type: Object,
+      type: Boolean,
       default: () => ({}),
     },
     itemForDelete: {
@@ -81,7 +81,6 @@ export default {
   },
   methods: {
     closeModal() {
-      // this.modalOpened = false;
       this.$emit('modalClose');
     },
     deleteItem() {

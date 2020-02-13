@@ -2,7 +2,7 @@
   <div id="app">
     <div class="bcgClr" />
     <div class="bcgImg" />
-    <template v-if="isEmpty">
+    <template v-if="isNotEmpty">
       <EmptyTaskList @addItem="onSubmitData" />
     </template>
     <div v-else>
@@ -71,15 +71,15 @@ export default {
     tasksDoneList: [],
     percent: '',
     modalOpened: false,
-    itemForDelete: '',
+    itemForDelete: {},
     nameEdit: '',
   }),
   computed: {
     count() {
-      return `${this.list.length + this.tasksDoneList.length}`;
+      return this.list.length + this.tasksDoneList.length;
     },
     complete() {
-      return `${this.count - this.list.length}`;
+      return this.count - this.list.length;
     },
     percentDone() {
       if (this.complete === this.count && this.count !== 0) {
@@ -93,8 +93,8 @@ export default {
     sidebar() {
       return `${100 - this.percentDone}`;
     },
-    isEmpty() {
-      return this.list.length + this.tasksDoneList.length === 0 ? 'true' : false;
+    isNotEmpty() {
+      return !(this.list.length + this.tasksDoneList.length);
     },
   },
   created() {

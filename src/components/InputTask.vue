@@ -4,6 +4,7 @@
       <input
         id="new-task"
         v-model="formData.comment"
+        v-focus
         type="text"
         placeholder="New task..."
         class="task__new-input"
@@ -26,6 +27,14 @@ import { required } from 'vuelidate/lib/validators';
 
 export default {
   name: 'InputTask',
+  directives: {
+    focus: {
+      inserted(el) {
+        console.log('qwrtty');
+        el.focus();
+      },
+    },
+  },
   props: {
     list: {
       type: Object,
@@ -108,7 +117,7 @@ export default {
 .task__new-input:active,
 .task__new-input:focus {
   border-bottom: 1px solid #9a9999;
-  outline: none !important;
+  outline: none;
 }
 
 .error {

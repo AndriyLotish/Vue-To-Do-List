@@ -40,7 +40,7 @@ export default {
   name: 'TasksList',
   props: {
     list: {
-      type: Object,
+      type: Array,
       default: () => ({}),
     },
   },
