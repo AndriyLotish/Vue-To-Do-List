@@ -34,9 +34,12 @@
 <script>
 export default {
   name: 'TasksDone',
-  props: [
-    'tasksDoneList',
-  ],
+  props: {
+    tasksDoneList: {
+      type: Object,
+      default: () => ({}),
+    },
+  },
   data: () => ({
     indexEl: 5,
   }),

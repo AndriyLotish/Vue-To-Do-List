@@ -8,7 +8,7 @@
     <div v-else>
       <div
         class="sidebar"
-        :style="{top: sidebar + '%'}"
+        :style="{ top: sidebar + '%' }"
       />
       <div class="wrapper">
         <h1>Task list</h1>
@@ -94,7 +94,7 @@ export default {
       return `${100 - this.percentDone}`;
     },
     isEmpty() {
-      return (this.list.length + this.tasksDoneList.length === 0) ? 'true' : false;
+      return this.list.length + this.tasksDoneList.length === 0 ? 'true' : false;
     },
   },
   created() {
@@ -136,9 +136,7 @@ export default {
         if (task.id === id) {
           taskItem.checked = false;
           this.list.push(task);
-          this.tasksDoneList = this.tasksDoneList.filter(
-            taskDone => taskDone.id !== id,
-          );
+          this.tasksDoneList = this.tasksDoneList.filter(taskDone => taskDone.id !== id);
         }
       });
       localStorage.setItem('tasks', JSON.stringify(tasks));
@@ -196,14 +194,20 @@ body {
 
 .bcgClr {
   position: absolute;
-  left: 0;top: 0;right: 0;bottom: 0;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
   background-color: #2c3e50;
   z-index: -2;
 }
 
 .bcgImg {
   position: absolute;
-  left: 0;top: 0;right: 0;bottom: 0;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
   background-image: url("assets/Write tasks for yourself.png");
   background-repeat: repeat;
   z-index: 0;

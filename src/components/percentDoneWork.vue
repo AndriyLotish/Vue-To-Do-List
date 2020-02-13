@@ -49,15 +49,36 @@
 <script>
 export default {
   name: 'PercentDoneWork',
-  props: [
-    'list',
-    'tasksDoneList',
-    'count',
-    'complete',
-    'percentDone',
-    'modalOpened',
-    'itemForDelete',
-  ],
+  props: {
+    list: {
+      type: Object,
+      default: () => ({}),
+    },
+    tasksDoneList: {
+      type: Object,
+      default: () => ({}),
+    },
+    count: {
+      type: Object,
+      default: () => ({}),
+    },
+    complete: {
+      type: Object,
+      default: () => ({}),
+    },
+    percentDone: {
+      type: Object,
+      default: () => ({}),
+    },
+    modalOpened: {
+      type: Object,
+      default: () => ({}),
+    },
+    itemForDelete: {
+      type: Object,
+      default: () => ({}),
+    },
+  },
   methods: {
     closeModal() {
       // this.modalOpened = false;

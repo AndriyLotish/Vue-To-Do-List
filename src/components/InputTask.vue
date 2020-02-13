@@ -1,19 +1,24 @@
 <template>
-    <div class="tasks__new">
-      <div :class="{ 'form-group--error': $v.formData.comment.$error }">
+  <div class="tasks__new">
+    <div :class="{ 'form-group--error': $v.formData.comment.$error }">
       <input
         id="new-task"
+        v-model="formData.comment"
         type="text"
         placeholder="New task..."
-        @keyup.enter="onSubmit"
         class="task__new-input"
-        v-model="formData.comment"
-      />
-      </div>
-      <div v-if="!$v.formData.comment.$error">
-        <div class="error" v-if="$v.formData.comment.required">Field is required</div>
+        @keyup.enter="onSubmit"
+      >
+    </div>
+    <div v-if="!$v.formData.comment.$error">
+      <div
+        v-if="$v.formData.comment.required"
+        class="error"
+      >
+        Field is required
       </div>
     </div>
+  </div>
 </template>
 
 <script>

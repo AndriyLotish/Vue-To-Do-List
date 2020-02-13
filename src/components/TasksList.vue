@@ -38,9 +38,12 @@
 <script>
 export default {
   name: 'TasksList',
-  props: [
-    'list',
-  ],
+  props: {
+    list: {
+      type: Object,
+      default: () => ({}),
+    },
+  },
   data: () => ({
     valueForContentEdit: false,
     nameEdit: '',
