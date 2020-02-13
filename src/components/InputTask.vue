@@ -30,7 +30,6 @@ export default {
   directives: {
     focus: {
       inserted(el) {
-        console.log('qwrtty');
         el.focus();
       },
     },
